@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.basketMapper">
+
+<!-- Max Num -->
+<select id="getBasketMaxNum" resultType="int">
+	select nvl(max(num),0) from basket
+</select>
+
+<!-- 장바구니 추가 -->
+<insert id="insertBasket" parameterType="com.exe.dto.BasketDTO">
+	insert into basket(email,num,type1,type2,type3,pd_num,modelName1,imageUrl,price,quantity)
+	values (#{email},#{num},#{type1},#{type2},#{type3},#{pd_num},#{modelName1},#{imageUrl},#{price},#{quantity})
+</insert>
+
+<!-- 장바구니 수량 수정 -->
+<update id="updateBasket" parameterType="com.exe.dto.BasketDTO">
+	update basket set quantity = #{quantity} 
+	where email = #{email} and type1 = #{type1} and type2 = #{type2} and modelName1 = #{modelName1} and pd_num = #{pd_num}
+</update>
+
+<!-- 장바구니 삭제 -->
+<delete id="deleteBasket" parameterType="com.exe.dto.BasketDTO">
+	delete basket
+	where email = #{email} and type1 = #{type1} and type2 = #{type2} and modelName1 = #{modelName1} and pd_num = #{pd_num}
+</delete>
+
+<!-- 장바구니 전체 삭제 -->
+<delete id="deleteAllBasket" parameterType="String">
+	delete basket
+	where email = #{email}
+</delete>
+
+<!-- 장바구니 리스트 검색(제품명 미포함) -->
+<!-- 리스트 출력용 -->
+<select id="getBasketList" parameterType="map" resultType="com.exe.dto.BasketDTO">
+	select email,num,type1,type2,type3,pd_num,modelName1,imageUrl,price,quantity from basket
+	where email = #{email} and type1 = #{type1} and type2 = #{type2}
+	order by num
+</select>
+
+<!-- 장바구니 리스트 검색(제품명 포함) -->
+<!-- 제품 추가 및 수량 변경용 -->
+<select id="getBasketListSearch" parameterType="com.exe.dto.BasketDTO" resultType="com.exe.dto.BasketDTO">
+	select email,num,type1,type2,type3,pd_num,modelName1,imageUrl,price,quantity from basket
+	where email = #{email} and type1 = #{type1} and type2 = #{type2} and modelName1 = #{modelName1} and pd_num = #{pd_num}
+</select>
+
+<!-- 장바구니 전체 리스트 -->
+<select id="getBasketAllList" parameterType="String" resultType="com.exe.dto.BasketDTO">
+	select email,num,type1,type2,type3,pd_num,modelName1,imageUrl,price,quantity from basket
+	where email = #{email} order by num
+</select>
+
+<!-- 해당 유저 장바구니 리스트 갯수 -->
+<select id="getBasketListCount" parameterType="String" resultType="int">
+	select count(*) from basket
+	where email = #{email}
+</select>
+
+<!-- 해당 유저 장바구니 제품 총 갯수 -->
+<select id="getBasketCount" parameterType="String" resultType="int">
+	select sum(quantity) from basket
+	where email = #{email}
+</select>
+
+<!-- 해당 유저 장바구니 총 금액 -->
+<select id="getTotalPrice" parameterType="String" resultType="int">
+	select sum(price*quantity) from basket
+	where email = #{email}
+</select>
+
+</mapper>
